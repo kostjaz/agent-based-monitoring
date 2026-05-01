@@ -58,10 +58,11 @@ curl -u agent:password https://monitor.example.com/-/healthy
 
 Interfaces:
 
-- Grafana: `https://monitor.example.com/grafana/`
+- Grafana: `https://monitor.example.com/`
 - Alertmanager: `https://monitor.example.com/alertmanager/`
+- Prometheus: `https://monitor.example.com/prometheus/`
 
-The Prometheus UI is intentionally not exposed publicly. Grafana reaches Prometheus through the internal Docker network.
+Prometheus and Alertmanager are protected by Caddy basic auth. Grafana uses its own login.
 
 ### 2. Remote Host
 
@@ -105,9 +106,9 @@ Email routing is configured in `central/alertmanager/alertmanager.yml.tpl`. Aler
 - Agent-to-central traffic is protected by HTTPS through Caddy.
 - Writes to Prometheus are protected with basic auth.
 - Remote hosts do not need inbound ports exposed.
-- Grafana and Alertmanager are also routed through Caddy. Grafana uses its own login, and Alertmanager is protected by the same Caddy basic auth.
+- Grafana, Prometheus, and Alertmanager are routed through Caddy. Grafana uses its own login, while Prometheus and Alertmanager are protected by the same Caddy basic auth.
 
-For production, it is still better to restrict access to `/grafana/` and `/alertmanager/` with a VPN or firewall allowlist when possible.
+For production, it is still better to restrict access to the monitoring host with a VPN or firewall allowlist when possible.
 
 ## Public Repository Notes
 
