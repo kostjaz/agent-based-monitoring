@@ -1,0 +1,36 @@
+services:
+  node-exporter:
+    image: prom/node-exporter:v1.8.2
+    restart: unless-stopped
+    pid: host
+    command:
+      - --path.procfs=/host/proc
+      - --path.sysfs=/host/sys
+      - --path.rootfs=/rootfs
+      - --collector.filesystem.mount-points-exclude=^/(dev|proc|sys|var/lib/docker/.+|run)($|/)
+      - --collector.filesystem.fs-types-exclude=^(autofs|binfmt_misc|bpf|cgroup2?|configfs|debugfs|devpts|devtmpfs|fusectl|hugetlbfs|iso9660|mqueue|nsfs|overlay|proc|procfs|pstore|rpc_pipefs|securityfs|selinuxfs|squashfs|sysfs|tracefs)$
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro,rslave
+
+  vmagent:
+    image: victoriametrics/vmagent:v1.106.1
+    restart: unless-stopped
+    env_file: .env
+    command:
+      - -promscrape.config=/etc/vmagent/prometheus.yml
+      - -remoteWrite.url=${REMOTE_WRITE_URL}
+      - -remoteWrite.basicAuth.username=${REMOTE_WRITE_USERNAME}
+      - -remoteWrite.basicAuth.password=${REMOTE_WRITE_PASSWORD}
+      - -remoteWrite.label=host=${HOST_LABEL}
+      - -remoteWrite.tmpDataPath=/vmagent-remotewrite-data
+    volumes:
+      - ./vmagent/prometheus.yml:/etc/vmagent/prometheus.yml:ro
+      - vmagent_data:/vmagent-remotewrite-data
+    depends_on:
+      - node-exporter
+
+volumes:
+  vmagent_data:
+

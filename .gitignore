@@ -1,0 +1,8 @@
+.DS_Store
+.env
+*.local
+
+# Runtime data. Named Docker volumes are used by default, but keep local mounts out
+# of git if the compose files are changed later.
+data/
+

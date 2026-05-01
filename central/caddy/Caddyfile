@@ -1,0 +1,36 @@
+{
+	email {$ACME_EMAIL}
+}
+
+{$MONITOR_DOMAIN} {
+	encode zstd gzip
+
+	@remote_write path /api/v1/write
+	handle @remote_write {
+		basicauth {
+			{$REMOTE_WRITE_USERNAME} {$REMOTE_WRITE_PASSWORD_HASH}
+		}
+		reverse_proxy prometheus:9090
+	}
+
+	@prometheus_health path /-/healthy /-/ready
+	handle @prometheus_health {
+		basicauth {
+			{$REMOTE_WRITE_USERNAME} {$REMOTE_WRITE_PASSWORD_HASH}
+		}
+		reverse_proxy prometheus:9090
+	}
+
+	handle /alertmanager* {
+		basicauth {
+			{$REMOTE_WRITE_USERNAME} {$REMOTE_WRITE_PASSWORD_HASH}
+		}
+		reverse_proxy alertmanager:9093
+	}
+
+	handle /grafana* {
+		reverse_proxy grafana:3000
+	}
+
+	respond "not found" 404
+}
