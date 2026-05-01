@@ -7,7 +7,7 @@
 
 	@remote_write path /api/v1/write
 	handle @remote_write {
-		basicauth {
+		basic_auth {
 			{$REMOTE_WRITE_USERNAME} {$REMOTE_WRITE_PASSWORD_HASH}
 		}
 		reverse_proxy prometheus:9090
@@ -15,14 +15,14 @@
 
 	@prometheus_health path /-/healthy /-/ready
 	handle @prometheus_health {
-		basicauth {
+		basic_auth {
 			{$REMOTE_WRITE_USERNAME} {$REMOTE_WRITE_PASSWORD_HASH}
 		}
 		reverse_proxy prometheus:9090
 	}
 
 	handle /alertmanager* {
-		basicauth {
+		basic_auth {
 			{$REMOTE_WRITE_USERNAME} {$REMOTE_WRITE_PASSWORD_HASH}
 		}
 		reverse_proxy alertmanager:9093
