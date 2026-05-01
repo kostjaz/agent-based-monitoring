@@ -6,9 +6,15 @@ scrape_configs:
     static_configs:
       - targets:
           - node-exporter:9100
+    relabel_configs:
+      - target_label: instance
+        replacement: __HOST_LABEL__
 
   - job_name: vmagent
     static_configs:
       - targets:
           - localhost:8429
+    relabel_configs:
+      - target_label: instance
+        replacement: __HOST_LABEL__-vmagent
 
