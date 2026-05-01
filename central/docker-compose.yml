@@ -22,7 +22,7 @@ services:
       - --config.file=/etc/prometheus/prometheus.yml
       - --storage.tsdb.path=/prometheus
       - --storage.tsdb.retention.time=30d
-      - --storage.tsdb.out_of_order_time_window=10m
+      - --storage.tsdb.out-of-order-time-window=10m
       - --web.enable-remote-write-receiver
       - --web.external-url=https://${MONITOR_DOMAIN}/prometheus
       - --web.route-prefix=/prometheus
