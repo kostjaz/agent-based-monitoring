@@ -98,7 +98,7 @@ node_uname_info
 - high load average;
 - local node_exporter scrape failures from vmagent's point of view.
 
-Email routing is configured in `central/alertmanager/alertmanager.yml`. Alert rules are configured in `central/prometheus/rules/host-alerts.yml`.
+Email routing is configured in `central/alertmanager/alertmanager.yml.tpl`. Alert rules are configured in `central/prometheus/rules/host-alerts.yml`.
 
 ## Security
 
@@ -117,4 +117,3 @@ The repository is safe to publish as long as real credentials are not committed.
 - Keep real `.env` files untracked.
 - Store deployment credentials in GitHub Actions Secrets or another secrets manager.
 - Do not put SMTP passwords, Grafana passwords, Caddy hashes, or agent passwords directly into workflow YAML files.
-

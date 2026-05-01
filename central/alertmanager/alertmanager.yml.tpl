@@ -1,9 +1,9 @@
 global:
   resolve_timeout: 5m
-  smtp_smarthost: '${SMTP_SMARTHOST}'
-  smtp_from: '${SMTP_FROM}'
-  smtp_auth_username: '${SMTP_AUTH_USERNAME}'
-  smtp_auth_password: '${SMTP_AUTH_PASSWORD}'
+  smtp_smarthost: '__SMTP_SMARTHOST__'
+  smtp_from: '__SMTP_FROM__'
+  smtp_auth_username: '__SMTP_AUTH_USERNAME__'
+  smtp_auth_password: '__SMTP_AUTH_PASSWORD__'
   smtp_require_tls: true
 
 route:
@@ -18,7 +18,7 @@ route:
 receivers:
   - name: email
     email_configs:
-      - to: '${ALERT_EMAIL_TO}'
+      - to: '__ALERT_EMAIL_TO__'
         send_resolved: true
         headers:
           subject: '[monitoring] {{ .Status }} {{ .CommonLabels.alertname }} {{ .CommonLabels.host }}'

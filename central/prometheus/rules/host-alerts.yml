@@ -2,7 +2,7 @@ groups:
   - name: host-alerts
     rules:
       - alert: HostMetricsMissing
-        expr: time() - max by (host) (max_over_time(timestamp(node_time_seconds{job="node"})[10m])) > 300
+        expr: time() - max by (host) (timestamp(node_time_seconds{job="node"})) > 300
         for: 2m
         labels:
           severity: critical

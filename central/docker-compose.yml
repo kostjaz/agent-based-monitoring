@@ -34,14 +34,17 @@ services:
     image: prom/alertmanager:v0.27.0
     restart: unless-stopped
     env_file: .env
+    entrypoint:
+      - /bin/sh
+      - /etc/alertmanager/render-and-run.sh
     command:
-      - --config.file=/etc/alertmanager/alertmanager.yml
-      - --config.expand-env
+      - --config.file=/tmp/alertmanager.yml
       - --storage.path=/alertmanager
       - --web.external-url=https://${MONITOR_DOMAIN}/alertmanager
       - --web.route-prefix=/alertmanager
     volumes:
-      - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - ./alertmanager/alertmanager.yml.tpl:/etc/alertmanager/alertmanager.yml.tpl:ro
+      - ./alertmanager/render-and-run.sh:/etc/alertmanager/render-and-run.sh:ro
       - alertmanager_data:/alertmanager
 
   grafana:
@@ -68,4 +71,3 @@ volumes:
   caddy_data:
   grafana_data:
   prometheus_data:
-
