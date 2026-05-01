@@ -10,6 +10,7 @@
 		basic_auth {
 			{$REMOTE_WRITE_USERNAME} {$REMOTE_WRITE_PASSWORD_HASH}
 		}
+		rewrite * /prometheus/api/v1/write
 		reverse_proxy prometheus:9090
 	}
 
@@ -18,6 +19,7 @@
 		basic_auth {
 			{$REMOTE_WRITE_USERNAME} {$REMOTE_WRITE_PASSWORD_HASH}
 		}
+		rewrite * /prometheus{uri}
 		reverse_proxy prometheus:9090
 	}
 
