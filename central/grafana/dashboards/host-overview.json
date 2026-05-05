@@ -103,7 +103,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "max by (host) (last_over_time(up{job=\"node\"}[2m]))",
+          "expr": "max by (host) (last_over_time(up{job=\"node\"}[5m:5m]))",
           "instant": false,
           "legendFormat": "{{host}}",
           "range": true,
