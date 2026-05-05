@@ -74,6 +74,8 @@ cp .env.example .env
 Edit `agent/.env`:
 
 - `HOST_LABEL`: stable host name, for example `prod-db-01`.
+- `NODE_NAME`: value exposed as `node_uname_info.nodename`; use this to override what dashboards show as `Nodename`.
+- `REGION_LABEL`: region label added to scraped metrics, for example `eu-west`, `rostov`, or `dc-1`.
 - `REMOTE_WRITE_URL`: `https://monitor.example.com/api/v1/write`.
 - `REMOTE_WRITE_USERNAME` and `REMOTE_WRITE_PASSWORD`: credentials matching the Caddy basic auth configuration.
 
