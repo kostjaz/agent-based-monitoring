@@ -37,13 +37,35 @@
           "color": {
             "mode": "thresholds"
           },
-          "mappings": [],
+          "mappings": [
+            {
+              "options": {
+                "0": {
+                  "color": "red",
+                  "index": 1,
+                  "text": "Down"
+                },
+                "1": {
+                  "color": "green",
+                  "index": 0,
+                  "text": "Up"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "max": 1,
+          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "red",
                 "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
               }
             ]
           }
@@ -58,11 +80,9 @@
       },
       "id": 1,
       "options": {
-        "displayMode": "gradient",
-        "maxVizHeight": 300,
-        "minVizHeight": 10,
-        "minVizWidth": 0,
-        "namePlacement": "auto",
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
         "orientation": "horizontal",
         "reduceOptions": {
           "calcs": [
@@ -71,8 +91,9 @@
           "fields": "",
           "values": false
         },
-        "showUnfilled": true,
-        "valueMode": "color"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
       "targets": [
         {
@@ -82,13 +103,14 @@
           },
           "editorMode": "code",
           "expr": "up{job=\"node\"}",
+          "instant": true,
           "legendFormat": "{{host}}",
-          "range": true,
+          "range": false,
           "refId": "A"
         }
       ],
       "title": "Host scrape status",
-      "type": "bargauge"
+      "type": "stat"
     },
     {
       "datasource": {
@@ -222,13 +244,13 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "(1 - (node_filesystem_avail_bytes{job=\"node\",fstype!~\"tmpfs|fuse.lxcfs|overlay|squashfs\",mountpoint!~\"/run.*|/var/lib/docker/.+\"} / node_filesystem_size_bytes{job=\"node\",fstype!~\"tmpfs|fuse.lxcfs|overlay|squashfs\",mountpoint!~\"/run.*|/var/lib/docker/.+\"})) * 100",
-          "legendFormat": "{{host}} {{mountpoint}}",
+          "expr": "(1 - (node_filesystem_avail_bytes{job=\"node\",mountpoint=\"/\",fstype!~\"tmpfs|fuse.lxcfs|overlay|parsecfs|squashfs\"} / node_filesystem_size_bytes{job=\"node\",mountpoint=\"/\",fstype!~\"tmpfs|fuse.lxcfs|overlay|parsecfs|squashfs\"})) * 100",
+          "legendFormat": "{{host}} /",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Disk usage",
+      "title": "Root filesystem usage",
       "type": "timeseries"
     }
   ],
