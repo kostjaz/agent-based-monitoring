@@ -103,11 +103,11 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "max by (region) (last_over_time(up{job=\"node\",region!=\"\"}[5m]))",
+          "expr": "max by (job) (last_over_time(up{host!=\"\",instance!~\".+-vmagent\"}[5m]))",
           "instant": false,
           "interval": "5m",
           "intervalFactor": 1,
-          "legendFormat": "{{region}}",
+          "legendFormat": "{{job}}",
           "range": true,
           "refId": "A"
         }
@@ -153,8 +153,8 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "100 - (avg by (host) (rate(node_cpu_seconds_total{job=\"node\",mode=\"idle\"}[5m])) * 100)",
-          "legendFormat": "{{host}}",
+          "expr": "100 - (avg by (job, host) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)",
+          "legendFormat": "{{job}} / {{host}}",
           "range": true,
           "refId": "A"
         }
@@ -200,8 +200,8 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "(1 - (node_memory_MemAvailable_bytes{job=\"node\"} / node_memory_MemTotal_bytes{job=\"node\"})) * 100",
-          "legendFormat": "{{host}}",
+          "expr": "(1 - (max by (job, host) (node_memory_MemAvailable_bytes) / max by (job, host) (node_memory_MemTotal_bytes))) * 100",
+          "legendFormat": "{{job}} / {{host}}",
           "range": true,
           "refId": "A"
         }
@@ -247,8 +247,8 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "(1 - (node_filesystem_avail_bytes{job=\"node\",mountpoint=\"/\",fstype!~\"tmpfs|fuse.lxcfs|overlay|parsecfs|squashfs\"} / node_filesystem_size_bytes{job=\"node\",mountpoint=\"/\",fstype!~\"tmpfs|fuse.lxcfs|overlay|parsecfs|squashfs\"})) * 100",
-          "legendFormat": "{{host}} /",
+          "expr": "(1 - (max by (job, host) (node_filesystem_avail_bytes{mountpoint=\"/\",fstype!~\"tmpfs|fuse.lxcfs|overlay|parsecfs|squashfs\"}) / max by (job, host) (node_filesystem_size_bytes{mountpoint=\"/\",fstype!~\"tmpfs|fuse.lxcfs|overlay|parsecfs|squashfs\"}))) * 100",
+          "legendFormat": "{{job}} / {{host}} /",
           "range": true,
           "refId": "A"
         }

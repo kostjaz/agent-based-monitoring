@@ -2,62 +2,69 @@ groups:
   - name: host-alerts
     rules:
       - alert: HostMetricsMissing
-        expr: time() - max by (host) (timestamp(node_time_seconds{job="node"})) > 300
+        expr: time() - max by (job, host) (timestamp(node_time_seconds)) > 300
         for: 2m
         labels:
           severity: critical
         annotations:
-          summary: "Host metrics missing: {{ $labels.host }}"
-          description: "No node_exporter metrics have been received from {{ $labels.host }} for more than 5 minutes."
+          summary: "Host metrics missing: {{ $labels.job }} / {{ $labels.host }}"
+          description: "No node_exporter metrics have been received from {{ $labels.job }} / {{ $labels.host }} for more than 5 minutes."
 
       - alert: NodeExporterDown
-        expr: up{job="node"} == 0
+        expr: up{host!="",instance!~".+-vmagent"} == 0
         for: 2m
         labels:
           severity: critical
         annotations:
-          summary: "node_exporter is down: {{ $labels.host }}"
-          description: "vmagent cannot scrape node_exporter on {{ $labels.host }}."
+          summary: "node_exporter is down: {{ $labels.job }} / {{ $labels.host }}"
+          description: "vmagent cannot scrape node_exporter on {{ $labels.job }} / {{ $labels.host }}."
 
       - alert: HostHighCpuUsage
-        expr: 100 - (avg by (host) (rate(node_cpu_seconds_total{job="node",mode="idle"}[5m])) * 100) > 85
+        expr: 100 - (avg by (job, host) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 85
         for: 10m
         labels:
           severity: warning
         annotations:
-          summary: "High CPU usage: {{ $labels.host }}"
-          description: "CPU usage on {{ $labels.host }} is above 85% for 10 minutes."
+          summary: "High CPU usage: {{ $labels.job }} / {{ $labels.host }}"
+          description: "CPU usage on {{ $labels.job }} / {{ $labels.host }} is above 85% for 10 minutes."
 
       - alert: HostHighMemoryUsage
-        expr: (1 - (node_memory_MemAvailable_bytes{job="node"} / node_memory_MemTotal_bytes{job="node"})) * 100 > 90
+        expr: |
+          (
+            1 - (
+              max by (job, host) (node_memory_MemAvailable_bytes)
+              /
+              max by (job, host) (node_memory_MemTotal_bytes)
+            )
+          ) * 100 > 90
         for: 10m
         labels:
           severity: warning
         annotations:
-          summary: "High memory usage: {{ $labels.host }}"
-          description: "Memory usage on {{ $labels.host }} is above 90% for 10 minutes."
+          summary: "High memory usage: {{ $labels.job }} / {{ $labels.host }}"
+          description: "Memory usage on {{ $labels.job }} / {{ $labels.host }} is above 90% for 10 minutes."
 
       - alert: HostLowDiskSpace
         expr: |
           (
             1 - (
-              node_filesystem_avail_bytes{job="node",fstype!~"tmpfs|fuse.lxcfs|overlay|parsecfs|squashfs",mountpoint!~"/run.*|/var/lib/docker/.+"}
+              node_filesystem_avail_bytes{fstype!~"tmpfs|fuse.lxcfs|overlay|parsecfs|squashfs",mountpoint!~"/run.*|/var/lib/docker/.+"}
               /
-              node_filesystem_size_bytes{job="node",fstype!~"tmpfs|fuse.lxcfs|overlay|parsecfs|squashfs",mountpoint!~"/run.*|/var/lib/docker/.+"}
+              node_filesystem_size_bytes{fstype!~"tmpfs|fuse.lxcfs|overlay|parsecfs|squashfs",mountpoint!~"/run.*|/var/lib/docker/.+"}
             )
           ) * 100 > 85
         for: 10m
         labels:
           severity: warning
         annotations:
-          summary: "Low disk space: {{ $labels.host }} {{ $labels.mountpoint }}"
-          description: "Filesystem {{ $labels.mountpoint }} on {{ $labels.host }} is more than 85% full."
+          summary: "Low disk space: {{ $labels.job }} / {{ $labels.host }} {{ $labels.mountpoint }}"
+          description: "Filesystem {{ $labels.mountpoint }} on {{ $labels.job }} / {{ $labels.host }} is more than 85% full."
 
       - alert: HostHighLoad
-        expr: node_load15{job="node"} / on (host) group_left count by (host) (node_cpu_seconds_total{job="node",mode="idle"}) > 1.5
+        expr: node_load15 / on (job, host) group_left count by (job, host) (node_cpu_seconds_total{mode="idle"}) > 1.5
         for: 15m
         labels:
           severity: warning
         annotations:
-          summary: "High load average: {{ $labels.host }}"
-          description: "15-minute load average on {{ $labels.host }} is high relative to CPU count."
+          summary: "High load average: {{ $labels.job }} / {{ $labels.host }}"
+          description: "15-minute load average on {{ $labels.job }} / {{ $labels.host }} is high relative to CPU count."

@@ -73,9 +73,8 @@ cp .env.example .env
 
 Edit `agent/.env`:
 
-- `HOST_LABEL`: stable host name, for example `prod-db-01`.
-- `NODE_NAME`: value exposed as `node_uname_info.nodename`; use this to override what dashboards show as `Nodename`.
-- `REGION_LABEL`: region label added to scraped metrics, for example `eu-west`, `rostov`, or `dc-1`.
+- `REGION_LABEL`: office label, for example `MIAC_Saratov`, `ENC_Moscow`, or `dc-1`. This is exposed as `job`, so the Node Exporter Full dashboard can use `Job` as the office selector.
+- `HOST_LABEL`: server label inside the office, for example `voice-dc` or `medvox01`. This value is exposed as `host`, `instance`, and `node_uname_info.nodename`, so the Node Exporter Full dashboard shows the same server name in `Nodename` and `Instance`.
 - `REMOTE_WRITE_URL`: `https://monitor.example.com/api/v1/write`.
 - `REMOTE_WRITE_USERNAME` and `REMOTE_WRITE_PASSWORD`: credentials matching the Caddy basic auth configuration.
 
@@ -88,7 +87,7 @@ docker compose up -d
 Verify metrics in Grafana Explore on the central host:
 
 ```promql
-up{job="node"}
+up{host!="",instance!~".+-vmagent"}
 node_uname_info
 ```
 

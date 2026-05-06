@@ -28,7 +28,6 @@ services:
       - -remoteWrite.basicAuth.username=${REMOTE_WRITE_USERNAME}
       - -remoteWrite.basicAuth.password=${REMOTE_WRITE_PASSWORD}
       - -remoteWrite.forcePromProto
-      - -remoteWrite.label=host=${HOST_LABEL}
       - -remoteWrite.tmpDataPath=/vmagent-remotewrite-data
     volumes:
       - ./vmagent/prometheus.yml.tpl:/etc/vmagent/prometheus.yml.tpl:ro
