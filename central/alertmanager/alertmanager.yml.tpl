@@ -9,7 +9,7 @@ global:
 route:
   receiver: email
   group_by:
-    - alertname
+    - '...'
   group_wait: 30s
   group_interval: 5m
   repeat_interval: 24h
@@ -20,4 +20,4 @@ receivers:
       - to: '__ALERT_EMAIL_TO__'
         send_resolved: true
         headers:
-          subject: '{{ if and .CommonLabels.job .CommonLabels.host }}[monitoring] {{ .Status }} {{ .CommonLabels.alertname }} {{ .CommonLabels.job }} / {{ .CommonLabels.host }}{{ else if .CommonLabels.job }}[monitoring] {{ .Status }} {{ .CommonLabels.alertname }} {{ .CommonLabels.job }} ({{ len .Alerts }} alerts){{ else }}[monitoring] {{ .Status }} {{ .CommonLabels.alertname }} ({{ len .Alerts }} alerts){{ end }}'
+          subject: '[monitoring] {{ .Status }} {{ .CommonLabels.job }} / {{ .CommonLabels.host }} {{ .CommonLabels.alertname }}{{ if .CommonLabels.mountpoint }} {{ .CommonLabels.mountpoint }}{{ end }}'
