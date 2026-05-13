@@ -48,9 +48,9 @@ groups:
         expr: |
           (
             1 - (
-              node_filesystem_avail_bytes{fstype!~"tmpfs|fuse.lxcfs|overlay|parsecfs|squashfs",mountpoint!~"/run.*|/var/lib/docker/.+"}
+              node_filesystem_avail_bytes{fstype!~"tmpfs|fuse.lxcfs|overlay|parsecfs|squashfs",mountpoint!~"/run.*|/tmp/s2snext_dialog_handler.*|/var/lib/docker/.+"}
               /
-              node_filesystem_size_bytes{fstype!~"tmpfs|fuse.lxcfs|overlay|parsecfs|squashfs",mountpoint!~"/run.*|/var/lib/docker/.+"}
+              node_filesystem_size_bytes{fstype!~"tmpfs|fuse.lxcfs|overlay|parsecfs|squashfs",mountpoint!~"/run.*|/tmp/s2snext_dialog_handler.*|/var/lib/docker/.+"}
             )
           ) * 100 > 85
         for: 10m
