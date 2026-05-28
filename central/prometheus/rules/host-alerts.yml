@@ -2,13 +2,17 @@ groups:
   - name: host-alerts
     rules:
       - alert: HostMetricsMissing
-        expr: time() - max by (job, host) (timestamp(node_time_seconds)) > 300
-        for: 2m
+        expr: |
+          max by (job, host) (present_over_time(node_time_seconds[24h]))
+          unless on (job, host)
+          max by (job, host) (present_over_time(node_time_seconds[10m]))
+        for: 0m
+        keep_firing_for: 10m
         labels:
           severity: critical
         annotations:
           summary: "Host metrics missing: {{ $labels.job }} / {{ $labels.host }}"
-          description: "No node_exporter metrics have been received from {{ $labels.job }} / {{ $labels.host }} for more than 5 minutes."
+          description: "No node_exporter metrics have been received from {{ $labels.job }} / {{ $labels.host }} for more than 10 minutes."
 
       - alert: NodeExporterDown
         expr: up{host!="",instance!~".+-vmagent"} == 0
