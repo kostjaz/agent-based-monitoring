@@ -23,8 +23,24 @@ groups:
           summary: "node_exporter is down: {{ $labels.job }} / {{ $labels.host }}"
           description: "vmagent cannot scrape node_exporter on {{ $labels.job }} / {{ $labels.host }}."
 
+      - alert: HostClockSkew
+        expr: abs(time() - max by (job, host) (node_time_seconds)) > 120
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Clock skew: {{ $labels.job }} / {{ $labels.host }}"
+          description: "System clock on {{ $labels.job }} / {{ $labels.host }} differs from monitoring server time by more than 2 minutes."
+
       - alert: HostHighCpuUsage
-        expr: 100 - (avg by (job, host) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 85
+        expr: |
+          (
+            100 - (avg by (job, host) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 85
+          )
+          and on (job, host)
+          (
+            abs(time() - max by (job, host) (node_time_seconds)) < 120
+          )
         for: 10m
         labels:
           severity: warning
