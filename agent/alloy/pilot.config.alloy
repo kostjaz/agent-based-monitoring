@@ -46,13 +46,10 @@ prometheus.relabel "host" {
   }
 }
 
-prometheus.exporter.cadvisor "containers" {
-  docker_host = "unix:///var/run/docker.sock"
-  docker_only = true
-}
-
 prometheus.scrape "containers" {
-  targets         = prometheus.exporter.cadvisor.containers.targets
+  targets = [{
+    "__address__" = "cadvisor-pilot:8080",
+  }]
   scrape_interval = "15s"
   forward_to      = [prometheus.relabel.containers.receiver]
 }

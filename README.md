@@ -182,5 +182,7 @@ docker compose -f docker-compose.alloy-pilot.yml up -d
 
 Pilot metrics carry `pilot="alloy"`, while retaining the normal `job`, `host`,
 and `instance` labels. This keeps the pilot series distinguishable during
-comparison. The pilot includes Alloy's embedded Unix exporter, cAdvisor
-exporter, and Prometheus remote_write queue.
+comparison. The pilot includes Alloy's embedded Unix exporter and Prometheus
+remote_write queue. Container resource metrics come from a current standalone
+cAdvisor service, which is reachable only inside the pilot Compose network and
+is scraped by Alloy.
