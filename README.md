@@ -114,11 +114,6 @@ throttling.
 
 ### Container Monitoring
 
-The base agent includes cAdvisor. vmagent scrapes it locally and sends container
-CPU, memory, network, and filesystem metrics to the central Prometheus. Grafana
-provisions the upstream `Cadvisor exporter` dashboard (dashboard ID `14282`).
-cAdvisor metrics are not used for alerting.
-
 To monitor the desired running state of containers, layer the container
 monitoring Compose file on top of the base agent configuration:
 
