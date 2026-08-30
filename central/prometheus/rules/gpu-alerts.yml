@@ -1,0 +1,71 @@
+groups:
+  - name: gpu-alerts
+    rules:
+      - alert: GPUMetricsMissing
+        expr: |
+          max by (job, host) (present_over_time(nvidia_smi_gpu_info[24h]))
+          unless on (job, host)
+          max by (job, host) (present_over_time(nvidia_smi_gpu_info[10m]))
+        for: 0m
+        keep_firing_for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: "GPU metrics missing: {{ $labels.job }} / {{ $labels.host }}"
+          description: "No NVIDIA GPU metrics have been received from {{ $labels.job }} / {{ $labels.host }} for more than 10 minutes."
+
+      - alert: GPUCollectionFailed
+        expr: nvidia_smi_last_collect_success == 0
+        for: 3m
+        keep_firing_for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "GPU metric collection failed: {{ $labels.job }} / {{ $labels.host }}"
+          description: "nvidia_gpu_exporter on {{ $labels.job }} / {{ $labels.host }} has been unable to collect GPU data for more than 3 minutes."
+
+      - alert: GPUCollectionStale
+        expr: |
+          (time() - nvidia_smi_last_collect_success_timestamp_seconds > 120)
+          and on (job, host, instance)
+          (nvidia_smi_last_collect_success == 1)
+        for: 5m
+        keep_firing_for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "GPU metric collection is stale: {{ $labels.job }} / {{ $labels.host }}"
+          description: "The last successful GPU metric collection on {{ $labels.job }} / {{ $labels.host }} is more than 2 minutes old."
+
+      - alert: GPUHighTemperature
+        expr: nvidia_smi_temperature_gpu > 80
+        for: 10m
+        keep_firing_for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High GPU temperature: {{ $labels.job }} / {{ $labels.host }}"
+          description: "GPU {{ $labels.uuid }} on {{ $labels.job }} / {{ $labels.host }} has been above 80 C for more than 10 minutes."
+
+      - alert: GPUThermalThrottling
+        expr: |
+          max by (job, host, instance, uuid) (
+            {__name__=~"nvidia_smi_clocks_event_reasons_(hw|sw)_thermal_slowdown"}
+          ) == 1
+        for: 2m
+        keep_firing_for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "GPU thermal throttling: {{ $labels.job }} / {{ $labels.host }}"
+          description: "GPU {{ $labels.uuid }} on {{ $labels.job }} / {{ $labels.host }} is reducing performance because of thermal limits."
+
+      - alert: GPURecoveryRequired
+        expr: nvidia_smi_gpu_recovery_action != 0
+        for: 1m
+        keep_firing_for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "GPU recovery required: {{ $labels.job }} / {{ $labels.host }}"
+          description: "The NVIDIA driver reports recovery action code {{ $value }} for GPU {{ $labels.uuid }} on {{ $labels.job }} / {{ $labels.host }}."

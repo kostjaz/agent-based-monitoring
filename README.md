@@ -120,6 +120,10 @@ throttling.
 - low filesystem free space;
 - high load average;
 - local node_exporter scrape failures from vmagent's point of view.
+- missing or stale NVIDIA GPU metrics;
+- NVIDIA GPU collection failures;
+- high GPU temperature and thermal throttling;
+- GPU recovery actions reported by the NVIDIA driver.
 
 Email routing is configured in `central/alertmanager/alertmanager.yml.tpl`. Alert rules are configured in `central/prometheus/rules/host-alerts.yml`.
 
