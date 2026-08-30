@@ -1,0 +1,25 @@
+groups:
+  - name: container-alerts
+    rules:
+      - alert: ContainerNotRunning
+        expr: s2snext_container_running == 0
+        for: 2m
+        keep_firing_for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Container is not running: {{ $labels.job }} / {{ $labels.host }} / {{ $labels.target }}"
+          description: "Expected {{ $labels.source }} container target {{ $labels.target }} is not running on {{ $labels.job }} / {{ $labels.host }}."
+
+      - alert: ContainerCollectorFailed
+        expr: |
+          (s2snext_container_collector_success == 0)
+          or
+          (time() - s2snext_container_collector_timestamp_seconds > 120)
+        for: 5m
+        keep_firing_for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Container state collector failed: {{ $labels.job }} / {{ $labels.host }}"
+          description: "Container desired-state metrics cannot be collected on {{ $labels.job }} / {{ $labels.host }}."

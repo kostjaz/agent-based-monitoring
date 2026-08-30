@@ -112,6 +112,35 @@ dashboard ID `14574`) from the local dashboard JSON. Use its `job`, `host`, and
 `GPU` selectors to inspect utilization, VRAM, temperature, power, clocks, and
 throttling.
 
+### Container Monitoring
+
+The base agent includes cAdvisor. vmagent scrapes it locally and sends container
+CPU, memory, network, and filesystem metrics to the central Prometheus. Grafana
+provisions the upstream `Cadvisor exporter` dashboard (dashboard ID `14282`).
+cAdvisor metrics are not used for alerting.
+
+To monitor the desired running state of containers, layer the container
+monitoring Compose file on top of the base agent configuration:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.containers.yml up -d
+```
+
+Set `COMPOSE_PROJECT_DIRECTORY` to monitor every service declared by that
+Compose project. A service reports as down even when its container was never
+created or has been removed. The default directory is `/opt/s2snext`.
+
+Additional containers can be monitored explicitly, including containers that
+do not belong to that Compose project:
+
+```dotenv
+COMPOSE_PROJECT_DIRECTORY=/opt/s2snext
+MONITORED_CONTAINER_NAMES=engine,task-loader,postgres,freeswitch
+```
+
+Both modes can be enabled at the same time. `MONITORED_CONTAINER_NAMES` accepts
+comma-separated or space-separated exact Docker container names.
+
 ## Included Alerts
 
 - missing host metrics;
@@ -124,6 +153,8 @@ throttling.
 - NVIDIA GPU collection failures;
 - high GPU temperature and thermal throttling;
 - GPU recovery actions reported by the NVIDIA driver.
+- stopped, missing, or not-yet-created expected containers;
+- container desired-state collector failures.
 
 Email routing is configured in `central/alertmanager/alertmanager.yml.tpl`. Alert rules are configured in `central/prometheus/rules/host-alerts.yml`.
 

@@ -29,3 +29,29 @@ scrape_configs:
         replacement: __HOST_LABEL__
       - target_label: instance
         replacement: __HOST_LABEL__-vmagent
+
+  - job_name: cadvisor
+    static_configs:
+      - targets:
+          - cadvisor:8080
+    relabel_configs:
+      - target_label: host
+        replacement: __HOST_LABEL__
+      - target_label: instance
+        replacement: __HOST_LABEL__
+      - target_label: job
+        replacement: __REGION_LABEL__
+      - target_label: exporter
+        replacement: cadvisor
+
+  - job_name: optional-exporters
+    file_sd_configs:
+      - files:
+          - /etc/vmagent/optional-targets/*.yml
+    relabel_configs:
+      - target_label: host
+        replacement: __HOST_LABEL__
+      - target_label: instance
+        replacement: __HOST_LABEL__
+      - target_label: job
+        replacement: __REGION_LABEL__

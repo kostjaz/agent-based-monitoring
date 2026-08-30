@@ -15,7 +15,7 @@ groups:
           description: "No node_exporter metrics have been received from {{ $labels.job }} / {{ $labels.host }} for more than 10 minutes."
 
       - alert: NodeExporterDown
-        expr: up{host!="",instance!~".+-vmagent"} == 0
+        expr: up{host!="",instance!~".+-vmagent",exporter!~"cadvisor|compose-state"} == 0
         for: 2m
         labels:
           severity: critical
