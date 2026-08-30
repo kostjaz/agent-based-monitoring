@@ -6,6 +6,14 @@ groups:
           max by (job, host) (present_over_time(node_time_seconds[24h]))
           unless on (job, host)
           max by (job, host) (present_over_time(node_time_seconds[10m]))
+          unless on (job, host)
+          max by (job, host) (
+            present_over_time(node_time_seconds{job="SpeechKit",host="S2SNext.Stt"}[24h])
+            or present_over_time(node_time_seconds{job="amd",host="amd-server"}[24h])
+            or present_over_time(node_time_seconds{job="s2snext",host="amd-server"}[24h])
+            or present_over_time(node_time_seconds{job="hostkey",host="nlu"}[24h])
+            or present_over_time(node_time_seconds{job="s2snext",host="speechkit"}[24h])
+          )
         for: 0m
         keep_firing_for: 10m
         labels:
