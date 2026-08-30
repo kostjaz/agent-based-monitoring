@@ -170,3 +170,17 @@ The repository is safe to publish as long as real credentials are not committed.
 - Keep real `.env` files untracked.
 - Store deployment credentials in GitHub Actions Secrets or another secrets manager.
 - Do not put SMTP passwords, Grafana passwords, Caddy hashes, or agent passwords directly into workflow YAML files.
+
+## Alloy Pilot
+
+The QA host can run Grafana Alloy alongside the existing node_exporter and
+vmagent agent for migration testing:
+
+```bash
+docker compose -f docker-compose.alloy-pilot.yml up -d
+```
+
+Pilot metrics carry `pilot="alloy"`, while retaining the normal `job`, `host`,
+and `instance` labels. This keeps the pilot series distinguishable during
+comparison. The pilot includes Alloy's embedded Unix exporter, cAdvisor
+exporter, and Prometheus remote_write queue.

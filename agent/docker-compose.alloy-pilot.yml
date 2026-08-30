@@ -1,0 +1,26 @@
+services:
+  alloy-pilot:
+    image: grafana/alloy:v1.18.0
+    restart: unless-stopped
+    privileged: true
+    pid: host
+    env_file: .env
+    command:
+      - run
+      - /etc/alloy/config.alloy
+      - --server.http.listen-addr=0.0.0.0:12345
+      - --storage.path=/var/lib/alloy/data
+    volumes:
+      - ./alloy/pilot.config.alloy:/etc/alloy/config.alloy:ro
+      - /:/rootfs:ro
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /var/run:/var/run:rw
+      - /var/lib/docker:/var/lib/docker:ro
+      - /dev/disk:/dev/disk:ro
+      - alloy_pilot_data:/var/lib/alloy/data
+    devices:
+      - /dev/kmsg:/dev/kmsg
+
+volumes:
+  alloy_pilot_data:
