@@ -1,7 +1,7 @@
 services:
   alloy:
     volumes:
-      - ./compose-state-collector/alloy-target.yml:/etc/alloy/optional-targets/container-state.yml:ro
+      - ./alloy/targets-containers:/etc/alloy/optional-targets:ro
     depends_on:
       - compose-state-collector
 

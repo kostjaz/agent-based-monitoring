@@ -11,7 +11,7 @@ services:
       - --storage.path=/var/lib/alloy/data
     volumes:
       - ./alloy/config.alloy:/etc/alloy/config.alloy:ro
-      - ./alloy/optional-targets:/etc/alloy/optional-targets:ro
+      - ./alloy/targets-none:/etc/alloy/optional-targets:ro
       - /:/rootfs:ro
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro

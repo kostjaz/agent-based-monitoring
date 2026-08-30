@@ -1,7 +1,7 @@
 services:
   alloy:
     volumes:
-      - ./alloy/nvidia-target.yml:/etc/alloy/optional-targets/nvidia-gpu.yml:ro
+      - ./alloy/targets-nlu:/etc/alloy/optional-targets:ro
     depends_on:
       - nvidia-gpu-exporter
 
