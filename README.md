@@ -185,4 +185,5 @@ and `instance` labels. This keeps the pilot series distinguishable during
 comparison. The pilot includes Alloy's embedded Unix exporter and Prometheus
 remote_write queue. Container resource metrics come from a current standalone
 cAdvisor service, which is reachable only inside the pilot Compose network and
-is scraped by Alloy.
+is scraped by Alloy. The same pilot also runs the Compose state collector, so
+Alloy sends both actual resource usage and expected-service state.
