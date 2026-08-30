@@ -1,0 +1,4 @@
+- targets:
+    - nvidia-gpu-exporter:9835
+  labels:
+    exporter: nvidia-gpu

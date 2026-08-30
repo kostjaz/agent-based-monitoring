@@ -1,0 +1,4 @@
+- targets:
+    - compose-state-collector:9418
+  labels:
+    exporter: compose-state

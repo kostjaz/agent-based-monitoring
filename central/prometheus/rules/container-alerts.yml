@@ -2,7 +2,7 @@ groups:
   - name: container-alerts
     rules:
       - alert: ContainerNotRunning
-        expr: s2snext_container_running == 0
+        expr: s2snext_container_running{host=~"stt|nlu|amd"} == 0
         for: 2m
         keep_firing_for: 5m
         labels:
@@ -13,9 +13,9 @@ groups:
 
       - alert: ContainerCollectorFailed
         expr: |
-          (s2snext_container_collector_success == 0)
+          (s2snext_container_collector_success{host=~"stt|nlu|amd"} == 0)
           or
-          (time() - s2snext_container_collector_timestamp_seconds > 120)
+          (time() - s2snext_container_collector_timestamp_seconds{host=~"stt|nlu|amd"} > 120)
         for: 5m
         keep_firing_for: 5m
         labels:

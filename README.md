@@ -171,19 +171,36 @@ The repository is safe to publish as long as real credentials are not committed.
 - Store deployment credentials in GitHub Actions Secrets or another secrets manager.
 - Do not put SMTP passwords, Grafana passwords, Caddy hashes, or agent passwords directly into workflow YAML files.
 
-## Alloy Pilot
+## Alloy Agent
 
-The QA host can run Grafana Alloy alongside the existing node_exporter and
-vmagent agent for migration testing:
+The production agent uses Alloy for host metrics and remote_write, with a
+current standalone cAdvisor for Docker resource metrics:
 
 ```bash
-docker compose -f docker-compose.alloy-pilot.yml up -d
+docker compose -f docker-compose.alloy.yml up -d
 ```
 
-Pilot metrics carry `pilot="alloy"`, while retaining the normal `job`, `host`,
-and `instance` labels. This keeps the pilot series distinguishable during
-comparison. The pilot includes Alloy's embedded Unix exporter and Prometheus
-remote_write queue. Container resource metrics come from a current standalone
-cAdvisor service, which is reachable only inside the pilot Compose network and
-is scraped by Alloy. The same pilot also runs the Compose state collector, so
-Alloy sends both actual resource usage and expected-service state.
+Enable desired-state collection only on STT, NLU, and AMD:
+
+```bash
+docker compose \
+  -f docker-compose.alloy.yml \
+  -f docker-compose.alloy-containers.yml \
+  up -d
+```
+
+NLU additionally enables the NVIDIA exporter:
+
+```bash
+docker compose \
+  -f docker-compose.alloy.yml \
+  -f docker-compose.alloy-containers.yml \
+  -f docker-compose.alloy-nlu.yml \
+  up -d
+```
+
+The cAdvisor and optional exporters are reachable only inside the agent
+Compose network. Alloy applies the standard `job`, `host`, and `instance`
+labels and sends every metric through its Prometheus remote_write queue.
+Container-state alerts are restricted centrally to `stt`, `nlu`, and `amd`;
+cAdvisor resource metrics do not generate container alerts.
