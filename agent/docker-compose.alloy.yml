@@ -15,6 +15,7 @@ services:
       - /:/rootfs:ro
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
+      - /run/udev:/run/udev:ro
       - /dev/disk:/dev/disk:ro
       - alloy_data:/var/lib/alloy/data
     depends_on:
