@@ -84,12 +84,33 @@ Start the agent:
 docker compose up -d
 ```
 
+For the NLU host with an NVIDIA GPU, layer the host-specific Compose file on
+top of the base agent configuration:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.nlu.yml up -d
+```
+
+This starts `nvidia_gpu_exporter` with access to all NVIDIA GPUs and switches
+vmagent to the NLU scrape configuration. The exporter remains internal to the
+Compose network; no GPU metrics port is published on the host. The NVIDIA
+driver and NVIDIA Container Toolkit must already be installed and configured
+for Docker.
+
 Verify metrics in Grafana Explore on the central host:
 
 ```promql
 up{host!="",instance!~".+-vmagent"}
 node_uname_info
+nvidia_smi_gpu_info
+nvidia_smi_utilization_gpu_ratio
+nvidia_smi_memory_used_bytes
 ```
+
+Grafana provisions the upstream `Nvidia GPU Metrics` dashboard (Grafana
+dashboard ID `14574`) from the local dashboard JSON. Use its `job`, `host`, and
+`GPU` selectors to inspect utilization, VRAM, temperature, power, clocks, and
+throttling.
 
 ## Included Alerts
 
