@@ -1,4 +1,10 @@
 services:
+  alloy:
+    volumes:
+      - ./alloy/targets-nlu:/etc/alloy/optional-targets:ro
+    depends_on:
+      - nvidia-gpu-exporter
+
   nvidia-gpu-exporter:
     image: utkuozdemir/nvidia_gpu_exporter:1.14.0
     restart: unless-stopped
@@ -14,9 +20,3 @@ services:
               count: all
               capabilities:
                 - gpu
-
-  vmagent:
-    volumes:
-      - ./vmagent/prometheus.nlu.yml.tpl:/etc/vmagent/prometheus.yml.tpl:ro
-    depends_on:
-      - nvidia-gpu-exporter

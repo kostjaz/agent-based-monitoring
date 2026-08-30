@@ -1,4 +1,10 @@
 services:
+  alloy:
+    volumes:
+      - ./alloy/targets-containers:/etc/alloy/optional-targets:ro
+    depends_on:
+      - compose-state-collector
+
   compose-state-collector:
     image: docker:29-cli
     restart: unless-stopped
@@ -20,9 +26,3 @@ services:
           create_host_path: false
     tmpfs:
       - /var/lib/compose-state-collector
-
-  vmagent:
-    volumes:
-      - ./compose-state-collector/vmagent-target.yml:/etc/vmagent/optional-targets/compose-state.yml:ro
-    depends_on:
-      - compose-state-collector

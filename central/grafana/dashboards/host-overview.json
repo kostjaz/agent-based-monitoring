@@ -103,7 +103,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "max by (job) (last_over_time(up{host!=\"\",instance!~\".+-vmagent\"}[5m]))",
+          "expr": "max by (job) (last_over_time(up{host!=\"\",exporter=\"\"}[5m]))",
           "instant": false,
           "interval": "5m",
           "intervalFactor": 1,

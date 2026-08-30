@@ -13,8 +13,8 @@ Central monitoring host:
 
 Remote host:
 
-- node_exporter: collects local operating system metrics.
-- vmagent: scrapes node_exporter locally and sends metrics to the central Prometheus over HTTPS.
+- Grafana Alloy: collects local operating system metrics and sends them to the central Prometheus over HTTPS.
+- cAdvisor: exposes Docker resource metrics to Alloy inside the agent Compose network.
 
 This is not classic Prometheus pull over the network. If inbound ports are closed on remote hosts, a central Prometheus cannot scrape them directly. The pull model remains local on each host, and transport to the central host is outbound-only through `remote_write`.
 
@@ -91,8 +91,8 @@ top of the base agent configuration:
 docker compose -f docker-compose.yml -f docker-compose.nlu.yml up -d
 ```
 
-This starts `nvidia_gpu_exporter` with access to all NVIDIA GPUs and switches
-vmagent to the NLU scrape configuration. The exporter remains internal to the
+This starts `nvidia_gpu_exporter` with access to all NVIDIA GPUs and adds it to
+Alloy's local scrape targets. The exporter remains internal to the
 Compose network; no GPU metrics port is published on the host. The NVIDIA
 driver and NVIDIA Container Toolkit must already be installed and configured
 for Docker.
@@ -100,7 +100,7 @@ for Docker.
 Verify metrics in Grafana Explore on the central host:
 
 ```promql
-up{host!="",instance!~".+-vmagent"}
+up{host!=""}
 node_uname_info
 nvidia_smi_gpu_info
 nvidia_smi_utilization_gpu_ratio
@@ -143,7 +143,7 @@ comma-separated or space-separated exact Docker container names.
 - high memory usage;
 - low filesystem free space;
 - high load average;
-- local node_exporter scrape failures from vmagent's point of view.
+- local Alloy host-exporter scrape failures;
 - missing or stale NVIDIA GPU metrics;
 - NVIDIA GPU collection failures;
 - high GPU temperature and thermal throttling;
@@ -177,15 +177,15 @@ The production agent uses Alloy for host metrics and remote_write, with a
 current standalone cAdvisor for Docker resource metrics:
 
 ```bash
-docker compose -f docker-compose.alloy.yml up -d
+docker compose up -d
 ```
 
 Enable desired-state collection only on STT, NLU, and AMD:
 
 ```bash
 docker compose \
-  -f docker-compose.alloy.yml \
-  -f docker-compose.alloy-containers.yml \
+  -f docker-compose.yml \
+  -f docker-compose.containers.yml \
   up -d
 ```
 
@@ -193,9 +193,9 @@ NLU additionally enables the NVIDIA exporter:
 
 ```bash
 docker compose \
-  -f docker-compose.alloy.yml \
-  -f docker-compose.alloy-containers.yml \
-  -f docker-compose.alloy-nlu.yml \
+  -f docker-compose.yml \
+  -f docker-compose.containers.yml \
+  -f docker-compose.nlu.yml \
   up -d
 ```
 

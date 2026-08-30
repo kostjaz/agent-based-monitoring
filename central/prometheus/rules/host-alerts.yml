@@ -12,16 +12,16 @@ groups:
           severity: critical
         annotations:
           summary: "Host metrics missing: {{ $labels.job }} / {{ $labels.host }}"
-          description: "No node_exporter metrics have been received from {{ $labels.job }} / {{ $labels.host }} for more than 10 minutes."
+          description: "No Alloy host metrics have been received from {{ $labels.job }} / {{ $labels.host }} for more than 10 minutes."
 
-      - alert: NodeExporterDown
-        expr: up{host!="",instance!~".+-vmagent",exporter!="compose-state"} == 0
+      - alert: AlloyHostExporterDown
+        expr: up{host!="",exporter=""} == 0
         for: 2m
         labels:
           severity: critical
         annotations:
-          summary: "node_exporter is down: {{ $labels.job }} / {{ $labels.host }}"
-          description: "vmagent cannot scrape node_exporter on {{ $labels.job }} / {{ $labels.host }}."
+          summary: "Alloy host exporter is down: {{ $labels.job }} / {{ $labels.host }}"
+          description: "Alloy cannot collect host metrics on {{ $labels.job }} / {{ $labels.host }}."
 
       - alert: HostClockSkew
         expr: abs(time() - max by (job, host) (node_time_seconds)) > 120
