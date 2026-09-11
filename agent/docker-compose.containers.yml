@@ -6,14 +6,15 @@ services:
       - compose-state-collector
 
   compose-state-collector:
-    image: docker:29-cli
+    build:
+      context: ./compose-state-collector
+    image: s2snext/compose-state-collector:local
     restart: unless-stopped
     entrypoint:
       - /bin/sh
       - /opt/compose-state-collector/collector.sh
     environment:
       COMPOSE_PROJECT_DIRECTORY: ${COMPOSE_PROJECT_DIRECTORY:-/opt/s2snext}
-      MONITORED_CONTAINER_NAMES: ${MONITORED_CONTAINER_NAMES:-}
       COLLECTION_INTERVAL: ${CONTAINER_COLLECTION_INTERVAL:-15}
     volumes:
       - ./compose-state-collector:/opt/compose-state-collector:ro

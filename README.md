@@ -121,20 +121,17 @@ monitoring Compose file on top of the base agent configuration:
 docker compose -f docker-compose.yml -f docker-compose.containers.yml up -d
 ```
 
-Set `COMPOSE_PROJECT_DIRECTORY` to monitor every service declared by that
-Compose project. A service reports as down even when its container was never
-created or has been removed. The default directory is `/opt/s2snext`.
+Set `COMPOSE_PROJECT_DIRECTORY` to the Compose project that declares the
+services to monitor. The default directory is `/opt/s2snext`. Mark each
+service whose running state is required:
 
-Additional containers can be monitored explicitly, including containers that
-do not belong to that Compose project:
-
-```dotenv
-COMPOSE_PROJECT_DIRECTORY=/opt/s2snext
-MONITORED_CONTAINER_NAMES=engine,task-loader,postgres,freeswitch
+```yaml
+labels:
+  com.s2snext.monitoring.expected-running: "true"
 ```
 
-Both modes can be enabled at the same time. `MONITORED_CONTAINER_NAMES` accepts
-comma-separated or space-separated exact Docker container names.
+Only labeled services are monitored. A labeled service reports as down even
+when its container is stopped, removed, or has never been created.
 
 ## Included Alerts
 
@@ -180,7 +177,8 @@ current standalone cAdvisor for Docker resource metrics:
 docker compose up -d
 ```
 
-Enable desired-state collection only on STT, NLU, and AMD:
+Enable desired-state collection on every host whose application Compose file
+contains `com.s2snext.monitoring.expected-running=true` labels:
 
 ```bash
 docker compose \
@@ -202,5 +200,6 @@ docker compose \
 The cAdvisor and optional exporters are reachable only inside the agent
 Compose network. Alloy applies the standard `job`, `host`, and `instance`
 labels and sends every metric through its Prometheus remote_write queue.
-Container-state alerts are restricted centrally to `stt`, `nlu`, and `amd`;
-cAdvisor resource metrics do not generate container alerts.
+During migration, the central rules continue to accept legacy container-state
+metrics from `stt`, `nlu`, and `amd`. Label-based metrics are alerted on for
+every host. cAdvisor resource metrics do not generate container alerts.
