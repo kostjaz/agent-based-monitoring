@@ -23,7 +23,7 @@ collect() {
   success=1
 
   {
-    echo '# HELP s2snext_container_running Whether an expected Docker Compose service or explicitly named container is running.'
+    echo '# HELP s2snext_container_running Whether a label-selected Docker Compose service is running.'
     echo '# TYPE s2snext_container_running gauge'
 
     if config="$(docker compose \
